@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>일단 말해보자고 - 관계 회복 솔루션</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366F1;
+            --primary-hover: #4F46E5;
+            --primary-light: #EEF2FF;
+            --text-main: #1F2937;
+            --text-sub: #6B7280;
+            --bg-grad-1: #4F46E5;
+            --bg-grad-2: #7C3AED;
+            --card-bg: #FFFFFF;
+            --border: #E5E7EB;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-grad-1), var(--bg-grad-2));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--text-main);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 640px;
+            background: var(--card-bg);
+            border-radius: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            padding: 28px 32px 20px 32px;
+            text-align: center;
+            background: #FAFAFA;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--bg-grad-1), var(--bg-grad-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+            display: inline-block;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-sub);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: #E5E7EB;
+            display: none; /* 메인페이지에선 숨김 */
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .step-content {
+            padding: 32px;
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 메인 홈 스타일 */
+        .home-container {
+            text-align: center;
+            padding: 48px 32px;
+        }
+
+        .home-emoji {
+            font-size: 56px;
+            margin-bottom: 16px;
+        }
+
+        .home-title {
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 12px;
+        }
+
+        .home-desc {
+            font-size: 16px;
+            color: var(--text-sub);
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .feature-tags {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 36px;
+        }
+
+        .tag {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .step-desc {
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-bottom: 24px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 160px;
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            font-size: 15px;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s;
+            line-height: 1.5;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+        }
+
+        /* 친밀도 슬라이더 */
+        .range-container {
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .range-value {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: #E5E7EB;
+            outline: none;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* 성별 선택 버튼 */
+        .gender-section {
+            margin-bottom: 24px;
+        }
+
+        .gender-label {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .gender-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-option {
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: white;
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .btn-option:hover {
+            border-color: #A5B4FC;
+            background: var(--primary-light);
+        }
+
+        .btn-option.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* 입력 폼 */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+        }
+
+        /* 버튼 그룹 */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: #F3F4F6;
+            color: var(--text-sub);
+        }
+
+        .btn-secondary:hover {
+            background: #E5E7EB;
+        }
+
+        /* 로딩 창 */
+        .loading {
+            text-align: center;
+            padding: 60px 32px;
+            display: none;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #E5E7EB;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 결과 화면 */
+        .result-container {
+            display: none;
+            padding: 32px;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .result-card {
+            background: #F9FAFB;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .result-card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-card-body {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-main);
+        }
+
+        .fault-bar-container {
+            margin: 16px 0;
+        }
+
+        .fault-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .fault-bar {
+            height: 12px;
+            background: #E5E7EB;
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .fault-my {
+            background: #EE467D;
+            height: 100%;
+            transition: width 0.8s ease;
+        }
+
+        .fault-friend {
+            background: #3B82F6;
+            height: 100%;
+            transition: width 0.8s ease;
+        }
+
+        .script-box {
+            background: #FFFFFF;
+            border-left: 4px solid var(--primary);
+            padding: 14px 16px;
+            border-radius: 0 12px 12px 0;
+            font-style: italic;
+            margin-top: 10px;
+            color: #374151;
+        }
+
+        .bullet-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .bullet-list li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 8px;
+        }
+
+        .bullet-list li::before {
+            content: "•";
+            position: absolute;
+            left: 4px;
+            color: var(--primary);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 상단 헤더 -->
+        <div class="header" id="header" style="display: none;">
+            <div class="logo">일단 말해보자고</div>
+            <div class="subtitle">친구와 어색해진 우리 사이, 솔루션을 찾아드려요.</div>
+        </div>
+
+        <div class="progress-bar-container" id="progressBarContainer">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <!-- 0. 메인 시작 화면 -->
+        <div class="home-container" id="homeStep">
+            <div class="home-emoji">💬</div>
+            <div class="home-title">일단 말해보자고</div>
+            <div class="home-desc">
+                친구와 싸우고 나서 어색하고 답답하신가요?<br>
+                갈등 상황을 알려주시면 누구 잘못인지 객관적으로 분석하고,<br>
+                어디서 어떤 말투로 화해해야 할지 자세히 알려드릴게요!
+            </div>
+            
+            <div class="feature-tags">
+                <span class="tag">#과실 비율 분석</span>
+                <span class="tag">#타이밍&장소 추천</span>
+                <span class="tag">#맞춤형 대화 대본</span>
+            </div>
+
+            <button class="btn btn-primary" onclick="startApp()">솔루션 시작하기</button>
+        </div>
+
+        <!-- STEP 1: 싸운 상황 -->
+        <div class="step-content" id="step1">
+            <div class="step-title">STEP 1. 어떤 일로 싸우셨나요?</div>
+            <div class="step-desc">어색해진 원인이 된 싸운 상황을 솔직하게 자유롭게 적어주세요.</div>
+            <textarea id="situationInput" placeholder="예: 약속 시간에 친구가 30분 넘게 늦었는데 사과도 없이 당연하다는 듯 행동해서 제가 화를 냈어요. 친구는 일이 있었다며 짜증을 냈고 그 이후로 서로 연락을 안 하고 있어요."></textarea>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="nextStep(2)">다음으로</button>
+            </div>
+        </div>
+
+        <!-- STEP 2: 친밀도 -->
+        <div class="step-content" id="step2">
+            <div class="step-title">STEP 2. 그 친구와 얼마나 친한가요?</div>
+            <div class="step-desc">평소 두 사람의 친밀도 수준을 선택해주세요 (10%~100%).</div>
+            <div class="range-container">
+                <div class="range-value" id="intimacyValue">50%</div>
+                <input type="range" id="intimacyRange" min="10" max="100" step="10" value="50" oninput="updateIntimacy(this.value)">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="nextStep(1)">이전</button>
+                <button class="btn btn-primary" onclick="nextStep(3)">다음으로</button>
+            </div>
+        </div>
+
+        <!-- STEP 3: 성별 정보 -->
+        <div class="step-content" id="step3">
+            <div class="step-title">STEP 3. 성별 정보를 입력해주세요.</div>
+            <div class="step-desc">대화법과 행동 특성 분석에 활용됩니다.</div>
+            
+            <div class="gender-section">
+                <span class="gender-label">나의 성별</span>
+                <div class="gender-grid">
+                    <button class="btn-option" onclick="selectGender('my', '남성', this)">남성</button>
+                    <button class="btn-option" onclick="selectGender('my', '여성', this)">여성</button>
+                </div>
+            </div>
+
+            <div class="gender-section">
+                <span class="gender-label">친구의 성별</span>
+                <div class="gender-grid">
+                    <button class="btn-option" onclick="selectGender('friend', '남성', this)">남성</button>
+                    <button class="btn-option" onclick="selectGender('friend', '여성', this)">여성</button>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="nextStep(2)">이전</button>
+                <button class="btn btn-primary" onclick="nextStep(4)">다음으로</button>
+            </div>
+        </div>
+
+        <!-- STEP 4: 언제/어디서 -->
+        <div class="step-content" id="step4">
+            <div class="step-title">STEP 4. 다음 만남 스케줄</div>
+            <div class="step-desc">친구와 다시 마주치거나 만날 가능성이 있는 일정을 알려주세요.</div>
+            
+            <div class="input-group">
+                <label for="whenInput">언제 만날 예정이거나 만날 수 있나요?</label>
+                <input type="text" id="whenInput" placeholder="예: 내일 학교 쉬는 시간, 이번 주 주말 저녁 등">
+            </div>
+
+            <div class="input-group">
+                <label for="whereInput">어디에서 같이 있게 되나요?</label>
+                <input type="text" id="whereInput" placeholder="예: 학교 교실, 동네 카페, 학원 등">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="nextStep(3)">이전</button>
+                <button class="btn btn-primary" onclick="generateResult()">결과 보기</button>
+            </div>
+        </div>
+
+        <!-- LOADING -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <h2>상황을 다각도로 분석하고 있습니다...</h2>
+            <p style="color: var(--text-sub); margin-top: 8px;">최적의 대화 스크립트와 행동 지침을 만드는 중입니다.</p>
+        </div>
+
+        <!-- RESULT -->
+        <div class="result-container" id="result">
+            <div class="step-title" style="text-align: center; margin-bottom: 24px; font-size: 24px;">
+                🤝 관계 회복 맞춤 솔루션
+            </div>
+
+            <!-- 잘못 분석 -->
+            <div class="result-card">
+                <div class="result-card-title">⚖️ 갈등 원인 및 객관적 잘못 비율 분석</div>
+                <div class="fault-bar-container">
+                    <div class="fault-labels">
+                        <span>나의 과실 (<span id="myFaultText">0</span>%)</span>
+                        <span>친구의 과실 (<span id="friendFaultText">0</span>%)</span>
+                    </div>
+                    <div class="fault-bar">
+                        <div class="fault-my" id="myFaultBar"></div>
+                        <div class="fault-friend" id="friendFaultBar"></div>
+                    </div>
+                </div>
+                <div class="result-card-body" id="faultAnalysis"></div>
+            </div>
+
+            <!-- 언제 어디서 어떻게 -->
+            <div class="result-card">
+                <div class="result-card-title">📍 언제, 어디서, 어떻게 말을 꺼낼까?</div>
+                <div class="result-card-body">
+                    <ul class="bullet-list" id="whenWhereHow"></ul>
+                </div>
+            </div>
+
+            <!-- 추천 말투 및 대화 스크립트 -->
+            <div class="result-card">
+                <div class="result-card-title">💬 추천 말투 & 실전 대화 스크립트</div>
+                <div class="result-card-body">
+                    <p id="toneGuide" style="margin-bottom: 12px; font-weight: 600; color: var(--primary);"></p>
+                    <p><strong>자연스럽게 사과/대화 건네는 법:</strong></p>
+                    <div class="script-box" id="script1"></div>
+                    <p style="margin-top: 12px;"><strong>상대방 반응에 응수하는 팁:</strong></p>
+                    <div class="script-box" id="script2"></div>
+                </div>
+            </div>
+
+            <!-- 행동 지침 -->
+            <div class="result-card">
+                <div class="result-card-title">💡 꼭 기억해야 할 행동 지침 (DO & DON'T)</div>
+                <div class="result-card-body">
+                    <ul class="bullet-list" id="actionGuidelines"></ul>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="restart()">처음으로 돌아가기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const state = {
+            situation: '',
+            intimacy: 50,
+            myGender: '',
+            friendGender: '',
+            when: '',
+            where: ''
+        };
+
+        function startApp() {
+            document.getElementById('homeStep').style.display = 'none';
+            document.getElementById('header').style.display = 'block';
+            document.getElementById('progressBarContainer').style.display = 'block';
+            nextStep(1);
+        }
+
+        function updateIntimacy(val) {
+            state.intimacy = parseInt(val);
+            document.getElementById('intimacyValue').innerText = val + '%';
+        }
+
+        function selectGender(target, gender, el) {
+            const parent = el.parentElement;
+            const buttons = parent.querySelectorAll('.btn-option');
+            buttons.forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+
+            if (target === 'my') state.myGender = gender;
+            if (target === 'friend') state.friendGender = gender;
+        }
+
+        function nextStep(stepNum) {
+            // 유효성 검사
+            if (stepNum === 2 && !document.getElementById('situationInput').value.trim()) {
+                alert('싸운 상황을 입력해주세요!');
+                return;
+            }
+            if (stepNum === 4) {
+                if (!state.myGender || !state.friendGender) {
+                    alert('성별을 모두 선택해주세요!');
+                    return;
+                }
+            }
+
+            if (stepNum === 2) {
+                state.situation = document.getElementById('situationInput').value.trim();
+            }
+
+            // 모든 단계 숨기기
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            
+            // 선택한 단계 표시
+            document.getElementById('step' + stepNum).classList.add('active');
+
+            // 진행도 바 업데이트
+            document.getElementById('progressBar').style.width = (stepNum * 25) + '%';
+        }
+
+        function generateResult() {
+            state.when = document.getElementById('whenInput').value.trim() || '다음 만남 때';
+            state.where = document.getElementById('whereInput').value.trim() || '조용한 곳';
+
+            // 로딩 화면 표시
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('loading').style.display = 'block';
+
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                renderResult();
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('progressBar').style.width = '100%';
+            }, 1500);
+        }
+
+        function renderResult() {
+            // 과실 비율 계산
+            let myFault = 40;
+            let friendFault = 60;
+
+            const sit = state.situation;
+            if (sit.includes('내가') || sit.includes('실수') || sit.includes('욱해서') || sit.includes('욕') || sit.includes('심하게')) {
+                myFault += 20;
+                friendFault -= 20;
+            }
+            if (sit.includes('늦어서') || sit.includes('약속') || sit.includes('거짓말') || sit.includes('무시')) {
+                friendFault += 10;
+                myFault -= 10;
+            }
+            
+            myFault = Math.max(20, Math.min(80, myFault));
+            friendFault = 100 - myFault;
+
+            document.getElementById('myFaultBar').style.width = myFault + '%';
+            document.getElementById('friendFaultBar').style.width = friendFault + '%';
+            document.getElementById('myFaultText').innerText = myFault;
+            document.getElementById('friendFaultText').innerText = friendFault;
+
+            // 과실 분석 텍스트
+            let faultText = "";
+            if (myFault > friendFault) {
+                faultText = "감정이 격해져서 서운함이나 화를 표현하는 방식에서 선을 넘었을 가능성이 있습니다. 상대방의 잘못도 존재하지만, 감정적으로 대한 부분에 대해 먼저 짚어주면 화해가 훨씬 쉬워집니다.";
+            } else if (myFault < friendFault) {
+                faultText = "원인 제공은 친구 쪽에 더 무게가 있습니다. 다만 상황을 해결하기 위해 당신이 먼저 손을 내미는 것은 '내가 다 잘못했다'는 뜻이 아니라 '너와의 관계가 이 일보다 더 중요하다'는 대인배적인 신호입니다.";
+            } else {
+                faultText = "서로 간의 오해와 서운함이 겹쳐 팽팽하게 대립한 상황입니다. 누군가 한 명이 명분(음료수나 가벼운 안부)을 만들어 물꼬를 터주는 것이 중요합니다.";
+            }
+            document.getElementById('faultAnalysis').innerText = faultText;
+
+            // 언제 어디서 어떻게
+            const whenWhereHowEl = document.getElementById('whenWhereHow');
+            whenWhereHowEl.innerHTML = `
+                <li><strong>타이밍 (${state.when}):</strong> 둘만 있을 수 있거나 대화가 중간에 끊기지 않을 때를 노리세요. 가급적 일과가 끝나가는 다소 편안한 시간대가 좋습니다.</li>
+                <li><strong>장소 (${state.where}):</strong> 시끄러운 장소보다는 서로의 목소리에 집중할 수 있고 눈을 맞출 수 있는 적당히 독립된 공간이 좋습니다.</li>
+                <li><strong>진입 방식:</strong> 너무 무거운 분위기보다는 "잠깐 이야기 좀 할 수 있어?" 혹은 가벼운 음료/간식을 하나 건네며 자연스럽게 접근해보세요.</li>
+            `;
+
+            // 말투 및 스크립트
+            const isHighIntimacy = state.intimacy >= 60;
+            const myG = state.myGender;
+            const friendG = state.friendGender;
+
+            let toneText = "";
+            let script1Text = "";
+            let script2Text = "";
+
+            if (isHighIntimacy) {
+                toneText = `친밀도가 높은 (${state.intimacy}%) 관계입니다. 너무 공식적이거나 격식 차린 사과보다는 솔직함과 약간의 털털함이 섞인 담백한 말투가 효과적입니다.`;
+                
+                if (myG === '남성' && friendG === '남성') {
+                    script1Text = `"야, 지난번에 내가 욱해서 말 심하게 한 건 미안하다. 너랑 계속 이렇게 어색하게 지내는 거 싫어서 말하는데, 오늘 맛있는 거나 먹으러 가자."`;
+                    script2Text = `친구 퉁명스러울 때 ➔ "아 직전엔 내가 좀 진지했냐? ㅋㅋ 진짜 미안해서 그래, 털어버리자!"`;
+                } else if (myG === '여성' && friendG === '여성') {
+                    script1Text = `"OO야, 그날 일 계속 마음에 걸렸어.. 내가 그때 너 마음 더 배려 못 하고 반응해서 미안해. 우리 어색하게 지내지 말고 풀자."`;
+                    script2Text = `친구 반응 머뭇거릴 때 ➔ "너도 마음 안 좋았지? 내가 먼저 말 못 건네서 미안해, 맛있는 거 먹으면서 얘기하자."`;
+                } else {
+                    script1Text = `"OO야, 지난번 일 때문에 계속 마음이 불편했어. 내가 감정적으로 굴었던 부분 미안해. 다시 편하게 지내고 싶어."`;
+                    script2Text = `상대방 머뭇거릴 때 ➔ "너도 당황스러웠을 텐데 먼저 사과해줘서 고맙다고 해주면 더 좋구! 풀어주라 ㅎㅎ"`;
+                }
+            } else {
+                toneText = `친밀도가 아직 높지 않은 (${state.intimacy}%) 관계입니다. 감정 호소보다는 경계심을 낮추는 차분하고 예의 바른 말투가 안전합니다.`;
+                
+                script1Text = `"OO님/야, 지난번에 상황 때문에 서로 오해가 있었던 것 같아. 내 행동 중에 불편했던 부분이 있었다면 사과하고 싶어서 먼저 연락했어."`;
+                script2Text = `친구 경계할 때 ➔ "부담 주려는 건 아니고, 서로 오해 없이 편하게 지냈으면 하는 마음에서 말했어! 편할 때 얘기하자."`;
+            }
+
+            document.getElementById('toneGuide').innerText = toneText;
+            document.getElementById('script1').innerText = script1Text;
+            document.getElementById('script2').innerText = script2Text;
+
+            // 행동 지침
+            const guidelinesEl = document.getElementById('actionGuidelines');
+            guidelinesEl.innerHTML = `
+                <li><strong>DO:</strong> 대화 시 상대방의 눈을 부드럽게 마주치고, 상대방이 말을 할 때 도중에 끊지 말고 끝까지 경청하세요.</li>
+                <li><strong>DO:</strong> "네가 그랬잖아"라는 너-메시지(You-Message) 대신 "내가 그때는 마음이 조급해서 그랬어"라는 나-메시지(I-Message)를 사용하세요.</li>
+                <li><strong>DON'T:</strong> "근데 너도 잘한 건 없잖아"라며 잘잘못을 다시 따지거나 변명을 덧붙이지 마세요. 사과의 진정성이 사라집니다.</li>
+                <li><strong>DON'T:</strong> 상대가 당장 마음을 풀지 않더라도 서운해하거나 화내지 마세요. 상대에게도 감정을 정돈할 시간이 필요합니다.</li>
+            `;
+        }
+
+        function restart() {
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('header').style.display = 'none';
+            document.getElementById('progressBarContainer').style.display = 'none';
+            document.getElementById('homeStep').style.display = 'block';
+
+            document.getElementById('situationInput').value = '';
+            document.getElementById('whenInput').value = '';
+            document.getElementById('whereInput').value = '';
+            document.querySelectorAll('.btn-option').forEach(b => b.classList.remove('selected'));
+            
+            state.situation = '';
+            state.intimacy = 50;
+            state.myGender = '';
+            state.friendGender = '';
+            state.when = '';
+            state.where = '';
+            
+            document.getElementById('intimacyRange').value = 50;
+            document.getElementById('intimacyValue').innerText = '50%';
+        }
+    </script>
+</body>
+</html>
